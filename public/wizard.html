@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Any1Can Code - AI Code Generation Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .api-key-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .api-key-section h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .api-key-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .api-key-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .help-text {
+            color: #666;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .help-text a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .wizard-section {
+            margin-top: 30px;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-header {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .project-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .project-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .project-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .project-card.selected {
+            background: #f0f4ff;
+            border-color: #667eea;
+        }
+
+        .project-card-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .result-section.active {
+            display: block;
+        }
+
+        .code-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            max-height: 500px;
+            position: relative;
+        }
+
+        .code-output pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .copy-button:hover {
+            background: #5a67d8;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c00;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Any1Can Code</h1>
+        <p class="subtitle">AI-Powered Code Generation Platform</p>
+
+        <!-- API Key Section -->
+        <div class="api-key-section">
+            <h3>🔑 Enter Your Claude API Key</h3>
+            <input type="password" id="apiKey" class="api-key-input" placeholder="sk-ant-api03-..." />
+            <p class="help-text">
+                Your API key is never stored and only used for this session.
+                <a href="https://console.anthropic.com/api" target="_blank">Get your API key here →</a>
+            </p>
+        </div>
+
+        <!-- Wizard Section -->
+        <div class="wizard-section">
+            <!-- Step 1: Choose Project Type -->
+            <div class="step active" id="step1">
+                <h2 class="step-header">Step 1: Choose Your Project Type</h2>
+                <div class="project-cards">
+                    <div class="project-card" data-project="html-website">
+                        <div class="project-card-icon">🌐</div>
+                        <h3>HTML Website</h3>
+                        <p>Personal or business website</p>
+                    </div>
+                    <div class="project-card" data-project="cisco-nso">
+                        <div class="project-card-icon">📦</div>
+                        <h3>Cisco NSO Package</h3>
+                        <p>Network service automation</p>
+                    </div>
+                    <div class="project-card" data-project="crosswork-workflow">
+                        <div class="project-card-icon">⚙️</div>
+                        <h3>Crosswork Workflow</h3>
+                        <p>Workflow automation</p>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="nextStep(1)" disabled id="step1Next">Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Project Details -->
+            <div class="step" id="step2">
+                <h2 class="step-header">Step 2: Project Details</h2>
+                <div id="dynamicForm"></div>
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="prevStep(2)">← Back</button>
+                    <button class="btn-primary" onclick="generateCode()">Generate Code ✨</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Section -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Generating your code with AI...</p>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage"></div>
+
+        <!-- Result Section -->
+        <div class="result-section" id="resultSection">
+            <h2 class="step-header">Generated Code</h2>
+            <div class="code-output">
+                <button class="copy-button" onclick="copyCode()">Copy Code</button>
+                <pre id="generatedCode"></pre>
+            </div>
+            <div class="button-group">
+                <button class="btn-secondary" onclick="startOver()">Start Over</button>
+                <button class="btn-primary" onclick="downloadCode()">Download Code</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedProject = null;
+        let generatedCodeContent = '';
+
+        // Project selection
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.project-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedProject = this.dataset.project;
+                document.getElementById('step1Next').disabled = false;
+            });
+        });
+
+        function nextStep(currentStep) {
+            if (currentStep === 1 && selectedProject) {
+                document.getElementById('step1').classList.remove('active');
+                document.getElementById('step2').classList.add('active');
+                loadDynamicForm();
+            }
+        }
+
+        function prevStep(currentStep) {
+            if (currentStep === 2) {
+                document.getElementById('step2').classList.remove('active');
+                document.getElementById('step1').classList.add('active');
+            }
+        }
+
+        function loadDynamicForm() {
+            const forms = {
+                'html-website': `
+                    <div class="form-group">
+                        <label>Website Type</label>
+                        <select id="websiteType">
+                            <option value="personal">Personal Portfolio</option>
+                            <option value="business">Business Website</option>
+                            <option value="blog">Blog</option>
+                            <option value="landing">Landing Page</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Website Title</label>
+                        <input type="text" id="title" placeholder="My Awesome Website" />
+                    </div>
+                    <div class="form-group">
+                        <label>Color Scheme</label>
+                        <select id="colorScheme">
+                            <option value="modern-blue">Modern Blue</option>
+                            <option value="elegant-dark">Elegant Dark</option>
+                            <option value="fresh-green">Fresh Green</option>
+                            <option value="warm-orange">Warm Orange</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Sections (comma-separated)</label>
+                        <input type="text" id="sections" placeholder="Header, About, Services, Contact" />
+                    </div>
+                `,
+                'cisco-nso': `
+                    <div class="form-group">
+                        <label>Package Name</label>
+                        <input type="text" id="packageName" placeholder="my-service-package" />
+                    </div>
+                    <div class="form-group">
+                        <label>Device Type</label>
+                        <select id="deviceType">
+                            <option value="cisco-ios">Cisco IOS</option>
+                            <option value="cisco-xr">Cisco IOS-XR</option>
+                            <option value="juniper">Juniper</option>
+                            <option value="generic">Generic</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Service Type</label>
+                        <select id="serviceType">
+                            <option value="l3vpn">L3VPN Service</option>
+                            <option value="l2vpn">L2VPN Service</option>
+                            <option value="qos">QoS Configuration</option>
+                            <option value="acl">ACL Management</option>
+                        </select>
+                    </div>
+                `,
+                'crosswork-workflow': `
+                    <div class="form-group">
+                        <label>Workflow Name</label>
+                        <input type="text" id="workflowName" placeholder="network-automation-workflow" />
+                    </div>
+                    <div class="form-group">
+                        <label>Trigger Type</label>
+                        <select id="triggerType">
+                            <option value="scheduled">Scheduled</option>
+                            <option value="event">Event-based</option>
+                            <option value="manual">Manual</option>
+                            <option value="api">API Trigger</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Actions (comma-separated)</label>
+                        <input type="text" id="actions" placeholder="collect-data, analyze, configure, verify" />
+                    </div>
+                `
+            };
+
+            document.getElementById('dynamicForm').innerHTML = forms[selectedProject] || '';
+        }
+
+        async function generateCode() {
+            const apiKey = document.getElementById('apiKey').value;
+
+            if (!apiKey) {
+                showError('Please enter your Claude API key');
+                return;
+            }
+
+            // Collect form inputs
+            const inputs = {};
+            document.querySelectorAll('#dynamicForm input, #dynamicForm select').forEach(field => {
+                inputs[field.id] = field.value;
+            });
+
+            // Show loading
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('errorMessage').classList.remove('active');
+
+            try {
+                const response = await fetch('/generate-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        apiKey: apiKey,
+                        projectType: selectedProject,
+                        userInputs: inputs
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    generatedCodeContent = result.code;
+                    document.getElementById('generatedCode').textContent = result.code;
+                    document.getElementById('loading').classList.remove('active');
+                    document.getElementById('resultSection').classList.add('active');
+                } else {
+                    showError(result.error || 'Failed to generate code');
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('loading').classList.remove('active');
+            document.getElementById('step2').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorMessage').classList.add('active');
+        }
+
+        function copyCode() {
+            navigator.clipboard.writeText(generatedCodeContent).then(() => {
+                const button = document.querySelector('.copy-button');
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        function downloadCode() {
+            const blob = new Blob([generatedCodeContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+
+            const extensions = {
+                'html-website': 'html',
+                'cisco-nso': 'yang',
+                'crosswork-workflow': 'json'
+            };
+
+            a.download = `generated-code.${extensions[selectedProject] || 'txt'}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function startOver() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>

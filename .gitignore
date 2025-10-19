@@ -1,0 +1,46 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Build outputs
+dist/
+build/
+*.pyc
+__pycache__/
+
+# NSO specific
+L3VPN/load-dir/
+L3VPN/state/
+*.fxs
+*.ccl
+
+# Claude Code
+.claude/settings.json
+
+# Temporary files
+*.tmp
+*.bak
+*.orig

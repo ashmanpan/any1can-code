@@ -1,0 +1,138 @@
+module L3VPN {
+  namespace "http://example.com/L3VPN";
+  prefix l3vpn;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "L3VPN Service Package for Cisco XR Devices";
+
+  revision 2023-01-01 {
+    description
+      "Initial revision";
+  }
+
+  augment /ncs:services {
+    list l3vpn {
+      description "L3VPN Service Instance";
+
+      key "name";
+      leaf name {
+        type string;
+        description "Service instance name";
+      }
+
+      uses ncs:service-data;
+      ncs:servicepoint l3vpn-servicepoint;
+
+      leaf customer-id {
+        type uint32;
+        mandatory true;
+        description "Customer identifier";
+      }
+
+      leaf vrf-name {
+        type string;
+        mandatory true;
+        description "VRF name";
+      }
+
+      leaf route-target {
+        type string;
+        mandatory true;
+        pattern '[0-9]+:[0-9]+';
+        description "Route target in format ASN:value";
+      }
+
+      leaf route-distinguisher {
+        type string;
+        mandatory true;
+        pattern '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+|[0-9]+:[0-9]+';
+        description "Route distinguisher";
+      }
+
+      container customer-sites {
+        list site {
+          key "site-id";
+          
+          leaf site-id {
+            type string;
+            description "Site identifier";
+          }
+
+          leaf device {
+            type leafref {
+              path "/ncs:devices/ncs:device/ncs:name";
+            }
+            mandatory true;
+            description "Target device";
+          }
+
+          leaf interface {
+            type string;
+            mandatory true;
+            description "Customer-facing interface";
+          }
+
+          leaf ip-address {
+            type inet:ipv4-address;
+            description "Interface IP address";
+          }
+
+          leaf subnet-mask {
+            type inet:ipv4-address;
+            description "Subnet mask";
+          }
+
+          leaf vlan-id {
+            type uint16 {
+              range "1..4094";
+            }
+            description "VLAN ID for sub-interface";
+          }
+
+          container bgp {
+            leaf local-as {
+              type uint32;
+              description "Local BGP AS number";
+            }
+
+            list neighbor {
+              key "ip";
+              leaf ip {
+                type inet:ipv4-address;
+                description "BGP neighbor IP";
+              }
+              
+              leaf remote-as {
+                type uint32;
+                mandatory true;
+                description "Remote AS number";
+              }
+            }
+          }
+        }
+      }
+
+      container qos-policy {
+        leaf ingress-policy {
+          type string;
+          description "Ingress QoS policy name";
+        }
+
+        leaf egress-policy {
+          type string;
+          description "Egress QoS policy name";
+        }
+      }
+    }
+  }
+}

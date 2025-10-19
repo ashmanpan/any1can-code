@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>L3VPN</name>
+  <package-version>1.0</package-version>
+  <description>L3VPN Service Package for Cisco XR Devices</description>
+  <ncs-min-version>6.0</ncs-min-version>
+  
+  <component>
+    <name>main</name>
+    <application>
+      <python-class-name>L3VPN.main.Main</python-class-name>
+    </application>
+  </component>
+  
+  <required-package>
+    <name>cisco-xr-cli</name>
+  </required-package>
+</ncs-package>

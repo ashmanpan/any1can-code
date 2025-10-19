@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Terminal - Code Platform</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.2.1/css/xterm.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+        }
+        #terminal-container {
+            background: #000;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .controls {
+            margin: 20px 0;
+            text-align: center;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .info {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Code Generation Platform - Terminal Interface</h1>
+
+        <div class="info">
+            <h3>How to use Claude Code in Terminal:</h3>
+            <ol>
+                <li>First time: Run <code>claude login</code> to authenticate</li>
+                <li>Follow the authentication prompts (you'll need your Anthropic account)</li>
+                <li>Once authenticated, run <code>claude</code> with your prompts</li>
+                <li>Example: <code>claude "create a Python hello world script"</code></li>
+            </ol>
+            <p><strong>Note:</strong> Each user authenticates with their own Anthropic account. Authentication persists for future sessions.</p>
+        </div>
+
+        <div class="wizard-section">
+            <h3>Quick Code Generation Wizard</h3>
+            <select id="projectType">
+                <option value="">Select Project Type</option>
+                <option value="html">HTML Website</option>
+                <option value="nso">Cisco NSO Package</option>
+                <option value="crosswork">Crosswork Workflow</option>
+            </select>
+            <button onclick="generatePrompt()">Generate Claude Command</button>
+            <div id="promptOutput"></div>
+        </div>
+
+        <div class="controls">
+            <button onclick="clearTerminal()">Clear Terminal</button>
+            <button onclick="runClaudeExample()">Run Claude Example</button>
+            <button onclick="testConnection()">Test Connection</button>
+        </div>
+
+        <div id="terminal-container"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.2.1/lib/xterm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.7.0/lib/xterm-addon-fit.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.8.0/lib/xterm-addon-web-links.js"></script>
+    <script>
+        // Initialize terminal
+        const term = new Terminal({
+            cursorBlink: true,
+            fontSize: 14,
+            fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+            theme: {
+                background: '#1e1e1e',
+                foreground: '#d4d4d4'
+            }
+        });
+
+        const fitAddon = new FitAddon.FitAddon();
+        term.loadAddon(fitAddon);
+
+        // Open terminal in container
+        term.open(document.getElementById('terminal-container'));
+        fitAddon.fit();
+
+        // Connect to WebSocket
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const ws = new WebSocket(`${protocol}//${window.location.host}/terminal`);
+
+        ws.onopen = () => {
+            term.writeln('Terminal connected! You can start typing commands...\n');
+        };
+
+        ws.onmessage = (event) => {
+            term.write(event.data);
+        };
+
+        ws.onerror = (error) => {
+            term.writeln('\r\nConnection error: ' + error);
+        };
+
+        ws.onclose = () => {
+            term.writeln('\r\nConnection closed');
+        };
+
+        // Send input to server
+        term.onData((data) => {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(data);
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            fitAddon.fit();
+        });
+
+        // Control functions
+        function clearTerminal() {
+            term.clear();
+        }
+
+        function runClaudeExample() {
+            if (ws.readyState === WebSocket.OPEN) {
+                // Check if Claude is installed and authenticated
+                ws.send('claude --version\n');
+                setTimeout(() => {
+                    // Simple example prompt
+                    ws.send('claude "Write a simple hello world in Python"\n');
+                }, 1000);
+            }
+        }
+
+        function testConnection() {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send('echo "Terminal connection is working!"\n');
+                ws.send('pwd\n');
+                ws.send('whoami\n');
+            }
+        }
+
+        function generatePrompt() {
+            const projectType = document.getElementById('projectType').value;
+            const prompts = {
+                'html': 'claude "Create a responsive HTML website with navigation, hero section, about section, and contact form. Use modern CSS with flexbox and grid. Include smooth scrolling and mobile menu."',
+                'nso': 'claude "Create a Cisco NSO service package with YANG model for configuring VLANs on network devices. Include service template and python code for service callbacks."',
+                'crosswork': 'claude "Create a Cisco Crosswork workflow for automated network health checks. Include data collection, threshold validation, and alert generation steps in JSON format."'
+            };
+
+            const outputDiv = document.getElementById('promptOutput');
+            if (prompts[projectType]) {
+                outputDiv.innerHTML = `
+                    <div style="background: #2a2a2a; padding: 15px; border-radius: 5px; margin-top: 15px;">
+                        <p style="color: #4CAF50; margin-bottom: 10px;">Copy and paste this command in the terminal:</p>
+                        <code style="color: #fff; word-break: break-all;">${prompts[projectType]}</code>
+                        <button onclick="sendToTerminal('${prompts[projectType]}')" style="margin-top: 10px;">Send to Terminal</button>
+                    </div>
+                `;
+            }
+        }
+
+        function sendToTerminal(command) {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(command + '\n');
+                document.getElementById('promptOutput').innerHTML += '<p style="color: #4CAF50;">✓ Command sent to terminal!</p>';
+            }
+        }
+    </script>
+</body>
+</html>

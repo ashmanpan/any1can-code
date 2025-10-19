@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-template xmlns="http://tail-f.com/ns/config/1.0"
+                servicepoint="l3vpn-servicepoint">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <?foreach {/customer-sites/site}?>
+    <device>
+      <name>{device}</name>
+      <config>
+        <vrf xmlns="http://tail-f.com/ns/ned/cisco-xr">
+          <vrf-list>
+            <vrf-name>{../../vrf-name}</vrf-name>
+            <address-family>
+              <ipv4>
+                <unicast>
+                  <import>
+                    <route-target>
+                      <address-list>
+                        <name>{../../route-target}</name>
+                      </address-list>
+                    </route-target>
+                  </import>
+                  <export>
+                    <route-target>
+                      <address-list>
+                        <name>{../../route-target}</name>
+                      </address-list>
+                    </route-target>
+                  </export>
+                </unicast>
+              </ipv4>
+            </address-family>
+            <rd>{../../route-distinguisher}</rd>
+          </vrf-list>
+        </vrf>
+
+        <interface xmlns="http://tail-f.com/ns/ned/cisco-xr">
+          <?if {vlan-id}?>
+          <GigabitEthernet>
+            <id>{interface}.{vlan-id}</id>
+            <encapsulation>
+              <dot1q>
+                <vlan-id>{vlan-id}</vlan-id>
+              </dot1q>
+            </encapsulation>
+            <vrf>{../../vrf-name}</vrf>
+            <?if {ip-address and subnet-mask}?>
+            <ipv4>
+              <address>
+                <ip>{ip-address}</ip>
+                <mask>{subnet-mask}</mask>
+              </address>
+            </ipv4>
+            <?endif?>
+            <no>
+              <shutdown/>
+            </no>
+          </GigabitEthernet>
+          <?else?>
+          <GigabitEthernet>
+            <id>{interface}</id>
+            <vrf>{../../vrf-name}</vrf>
+            <?if {ip-address and subnet-mask}?>
+            <ipv4>
+              <address>
+                <ip>{ip-address}</ip>
+                <mask>{subnet-mask}</mask>
+              </address>
+            </ipv4>
+            <?endif?>
+            <no>
+              <shutdown/>
+            </no>
+          </GigabitEthernet>
+          <?endif?>
+        </interface>
+
+        <?if {bgp/local-as}?>
+        <router xmlns="http://tail-f.com/ns/ned/cisco-xr">
+          <bgp>
+            <as-no>{bgp/local-as}</as-no>
+            <vrf>
+              <vrf-name>{../../vrf-name}</vrf-name>
+              <rd>{../../route-distinguisher}</rd>
+              <address-family>
+                <ipv4>
+                  <unicast>
+                    <redistribute>
+                      <connected/>
+                    </redistribute>
+                  </unicast>
+                </ipv4>
+              </address-family>
+              <?foreach {bgp/neighbor}?>
+              <neighbor>
+                <id>{ip}</id>
+                <remote-as>{remote-as}</remote-as>
+                <address-family>
+                  <ipv4>
+                    <unicast>
+                      <activate/>
+                    </unicast>
+                  </ipv4>
+                </address-family>
+              </neighbor>
+              <?endforeach?>
+            </vrf>
+          </bgp>
+        </router>
+        <?endif?>
+
+        <?if {../../qos-policy/ingress-policy or ../../qos-policy/egress-policy}?>
+        <interface xmlns="http://tail-f.com/ns/ned/cisco-xr">
+          <?if {vlan-id}?>
+          <GigabitEthernet>
+            <id>{interface}.{vlan-id}</id>
+            <?if {../../qos-policy/ingress-policy}?>
+            <service-policy>
+              <input>{../../qos-policy/ingress-policy}</input>
+            </service-policy>
+            <?endif?>
+            <?if {../../qos-policy/egress-policy}?>
+            <service-policy>
+              <output>{../../qos-policy/egress-policy}</output>
+            </service-policy>
+            <?endif?>
+          </GigabitEthernet>
+          <?else?>
+          <GigabitEthernet>
+            <id>{interface}</id>
+            <?if {../../qos-policy/ingress-policy}?>
+            <service-policy>
+              <input>{../../qos-policy/ingress-policy}</input>
+            </service-policy>
+            <?endif?>
+            <?if {../../qos-policy/egress-policy}?>
+            <service-policy>
+              <output>{../../qos-policy/egress-policy}</output>
+            </service-policy>
+            <?endif?>
+          </GigabitEthernet>
+          <?endif?>
+        </interface>
+        <?endif?>
+      </config>
+    </device>
+    <?endforeach?>
+  </devices>
+</config-template>
