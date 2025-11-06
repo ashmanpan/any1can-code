@@ -105,15 +105,18 @@ export async function handleChatRequest(
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        // Copy CLAUDE.md to working directory if specified
+        // Copy CLAUDE.md to working directory before invoking Claude
         if (chatRequest.workingDirectory) {
+          logger.chat.info(
+            "Ensuring CLAUDE.md exists in working directory: {workingDirectory}",
+            { workingDirectory: chatRequest.workingDirectory },
+          );
           const copySuccess = await ensureClaudeMdInDirectory(
             chatRequest.workingDirectory,
           );
-          if (copySuccess) {
-            logger.chat.info(
-              "CLAUDE.md ensured in working directory: {workingDirectory}",
-              { workingDirectory: chatRequest.workingDirectory },
+          if (!copySuccess) {
+            logger.chat.error(
+              "Failed to copy CLAUDE.md to working directory, but continuing anyway",
             );
           }
         }

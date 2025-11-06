@@ -49,16 +49,24 @@ export async function ensureClaudeMdInDirectory(
       "INFO"
     );
 
+    // Check if source and target are the same (user selected repo root)
+    if (resolve(sourcePath) === resolve(targetPath)) {
+      const msg = `Source and target are the same (${sourcePath}), CLAUDE.md already in place`;
+      logger.app.info(msg);
+      await logClaudeMdCopy(msg, "INFO");
+      return true;
+    }
+
     // Check if CLAUDE.md already exists in target directory
     try {
       await access(targetPath, constants.F_OK);
-      const msg = `CLAUDE.md already exists in ${targetDirectory}, skipping copy`;
+      const msg = `CLAUDE.md already exists at ${targetPath}, skipping copy`;
       logger.app.info(msg);
       await logClaudeMdCopy(msg, "INFO");
       return true;
     } catch {
       // File doesn't exist, proceed with copy
-      const msg = `CLAUDE.md does not exist in ${targetDirectory}, will copy`;
+      const msg = `CLAUDE.md does not exist at ${targetPath}, will copy from ${sourcePath}`;
       logger.app.debug(msg);
       await logClaudeMdCopy(msg, "DEBUG");
     }
