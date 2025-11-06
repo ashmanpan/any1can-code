@@ -278,9 +278,30 @@ interface ThinkingMessageComponentProps {
   message: ThinkingMessage;
 }
 
+// ========================================
+// THINKING DISPLAY TOGGLE
+// ========================================
+// Set to 'true' to show thinking content (what Claude is thinking)
+// Set to 'false' to hide thinking content (only show indicator)
+const SHOW_THINKING_CONTENT = false;
+// ========================================
+
 export function ThinkingMessageComponent({
   message,
 }: ThinkingMessageComponentProps) {
+  // If SHOW_THINKING_CONTENT is false, show only indicator without content
+  if (!SHOW_THINKING_CONTENT) {
+    return (
+      <div className="flex items-center gap-2 px-4 py-2 mb-3 bg-purple-50/60 dark:bg-purple-900/15 border border-purple-200 dark:border-purple-800 rounded-lg">
+        <span className="text-2xl">💭</span>
+        <span className="text-sm text-purple-700 dark:text-purple-300 italic">
+          Claude is thinking...
+        </span>
+      </div>
+    );
+  }
+
+  // If SHOW_THINKING_CONTENT is true, show full collapsible details
   return (
     <CollapsibleDetails
       label="Claude's Reasoning"
