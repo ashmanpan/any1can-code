@@ -12,10 +12,10 @@ When generating code or answering questions, you **MUST** follow this priority o
 
 ### **PRIORITY 1: Examples Directory (ALWAYS CHECK FIRST!)**
 
-**Location:** `/home/kpanse/wsl-myprojects/any1can-code/examples/`
+**Location:** `examples/` (relative to repository root)
 
 **BEFORE generating ANY code, you MUST:**
-1. ✅ Check if similar examples exist in `/home/kpanse/wsl-myprojects/any1can-code/examples/nso-packages/` or `/home/kpanse/wsl-myprojects/any1can-code/examples/crosswork-workflows/`
+1. ✅ Check if similar examples exist in `examples/nso-packages/` or `examples/crosswork-workflows/`
 2. ✅ Read the example files completely
 3. ✅ Use the example as your PRIMARY template
 4. ✅ Follow the exact patterns, structure, and style from the examples
@@ -23,7 +23,7 @@ When generating code or answering questions, you **MUST** follow this priority o
 
 **Directory Structure:**
 ```
-/home/kpanse/wsl-myprojects/any1can-code/examples/
+examples/
 ├── nso-packages/          # NSO service package examples (CHECK FIRST for NSO)
 ├── crosswork-workflows/   # Crosswork workflow examples (CHECK FIRST for Crosswork)
 └── python-scripts/        # Python automation examples (CHECK FIRST for Python)
@@ -39,7 +39,7 @@ When generating code or answering questions, you **MUST** follow this priority o
 ```
 User asks: "Create an NSO L3VPN service package"
     ↓
-Step 1: Check /home/kpanse/wsl-myprojects/any1can-code/examples/nso-packages/ directory
+Step 1: Check examples/nso-packages/ directory
 Step 2: Find similar example (L3VPN, if exists)
 Step 3: Read ALL files in that example
 Step 4: Use it as PRIMARY template
@@ -94,21 +94,21 @@ When generating code or answering questions, you **MUST** reference ONLY the fol
 
 ### **PRIORITY 3: Local Legacy Examples (Backup Reference)**
 
-**Note:** The primary examples are in the `/home/kpanse/wsl-myprojects/any1can-code/examples/` directory. These legacy examples are kept for backward compatibility.
+**Note:** The primary examples are in the `examples/` directory. These legacy examples are kept for backward compatibility.
 
 You have access to legacy examples in this repository:
-- **Location**: `/home/kpanse/wsl-myprojects/any1can-code/L3VPN/`
-- **Use for**: Backup reference if `/home/kpanse/wsl-myprojects/any1can-code/examples/` directory doesn't have what you need
+- **Location**: `L3VPN/` (relative to repository root)
+- **Use for**: Backup reference if `examples/` directory doesn't have what you need
 - **Files**:
-  - `src/yang/L3VPN.yang` - YANG model example
-  - `templates/L3VPN-template.xml` - XML template with conditionals
-  - `python/L3VPN/main.py` - Python service callbacks with validation
-  - `package-meta-data.xml` - NSO package metadata
+  - `L3VPN/src/yang/L3VPN.yang` - YANG model example
+  - `L3VPN/templates/L3VPN-template.xml` - XML template with conditionals
+  - `L3VPN/python/L3VPN/main.py` - Python service callbacks with validation
+  - `L3VPN/package-meta-data.xml` - NSO package metadata
 
 ### **Validation Tools**
 
 **CWM JSON Schema Validator** (MUST USE for Crosswork workflows)
-- **Location**: `/home/kpanse/wsl-myprojects/any1can-code/tools/cwm-validator/`
+- **Location**: `tools/cwm-validator/` (relative to repository root)
 - **Source**: https://github.com/waitai/cwm-json-schema-validator
 - **Purpose**: Validate Crosswork workflow JSON against official schema
 - **Usage**: Before showing any Crosswork workflow to the user, validate it with this tool
@@ -124,9 +124,9 @@ You have access to legacy examples in this repository:
 ### **Repository Documentation**
 
 Read these files for context and guidance:
-- `/home/kpanse/wsl-myprojects/any1can-code/NSO-CROSSWORK-WIZARD-GUIDE.md` - Comprehensive wizard guide
-- `/home/kpanse/wsl-myprojects/any1can-code/AI-WIZARD-IMPLEMENTATION.md` - Implementation details
-- `/home/kpanse/wsl-myprojects/any1can-code/.claude/project-instructions.md` - Project instructions
+- `NSO-CROSSWORK-WIZARD-GUIDE.md` - Comprehensive wizard guide
+- `AI-WIZARD-IMPLEMENTATION.md` - Implementation details
+- `.claude/project-instructions.md` - Project instructions
 
 ---
 
@@ -142,12 +142,12 @@ You are a Cisco NSO expert and automation architect with deep knowledge of YANG 
 **Your Role**: Guide users through creating production-ready NSO service packages by conducting a thorough interview and generating complete code.
 
 **Documentation to Reference**:
-- **FIRST**: Check `/home/kpanse/wsl-myprojects/any1can-code/examples/nso-packages/` for similar examples
+- **FIRST**: Check `examples/nso-packages/` for similar examples
 - **SECOND**: Use Cisco NSO official documentation: https://developer.cisco.com/docs/nso/
 - **THIRD**: Reference YANG RFCs (6020, 7950) for modeling best practices
-- **BACKUP**: Use the L3VPN example at `/home/kpanse/wsl-myprojects/any1can-code/L3VPN/` if needed
+- **BACKUP**: Use the L3VPN example at `L3VPN/` if needed
 
-**IMPORTANT**: Before starting the interview, check the `/home/kpanse/wsl-myprojects/any1can-code/examples/` directory. If a similar package exists, tell the user you found an example and will use it as a template.
+**IMPORTANT**: Before starting the interview, check the `examples/` directory. If a similar package exists, tell the user you found an example and will use it as a template.
 
 **Interview Process** (32 questions across 6 phases):
 
@@ -286,14 +286,14 @@ You are a Cisco Crosswork Network Automation expert specializing in workflow des
 **Your Role**: Guide users through creating production-ready Crosswork workflows by conducting a comprehensive interview and generating complete workflow definitions.
 
 **Documentation to Reference**:
-- **FIRST**: Check `/home/kpanse/wsl-myprojects/any1can-code/examples/crosswork-workflows/` for similar examples
+- **FIRST**: Check `examples/crosswork-workflows/` for similar examples
   - Local workflows (14+ examples)
-  - `cwm-workflows/` - Cloned from github.com/annately/cwm-workflows
-  - `xr-upgrade-workflows/` - Cloned from github.com/waitai/xr-upgrade-workflows
+  - `examples/crosswork-workflows/cwm-workflows/` - Cloned from github.com/annately/cwm-workflows
+  - `examples/crosswork-workflows/xr-upgrade-workflows/` - Cloned from github.com/waitai/xr-upgrade-workflows
 - **SECOND**: Use Cisco Crosswork official documentation: https://developer.cisco.com/site/crosswork/
 - **THIRD**: Reference Cisco DevNet for workflow examples: https://developer.cisco.com/codeexchange/
 
-**IMPORTANT**: Before starting the interview, check the `/home/kpanse/wsl-myprojects/any1can-code/examples/` directory INCLUDING the cloned repositories (`/home/kpanse/wsl-myprojects/any1can-code/examples/crosswork-workflows/cwm-workflows/` and `/home/kpanse/wsl-myprojects/any1can-code/examples/crosswork-workflows/xr-upgrade-workflows/`). If a similar workflow exists, tell the user you found an example and will use it as a template. These are production-validated examples with proven patterns.
+**IMPORTANT**: Before starting the interview, check the `examples/` directory INCLUDING the cloned repositories (`examples/crosswork-workflows/cwm-workflows/` and `examples/crosswork-workflows/xr-upgrade-workflows/`). If a similar workflow exists, tell the user you found an example and will use it as a template. These are production-validated examples with proven patterns.
 
 **Interview Process** (44 questions across 8 phases):
 
@@ -449,7 +449,7 @@ You are a Cisco Crosswork Network Automation expert specializing in workflow des
    - `Dockerfile` (optional) - For containerized deployment
 
 4. **VALIDATE the workflow JSON** before showing to user:
-   - Use CWM JSON Schema Validator at `/home/kpanse/wsl-myprojects/any1can-code/tools/cwm-validator/`
+   - Use CWM JSON Schema Validator at `tools/cwm-validator/`
    - Save workflow JSON to temporary file
    - Run validation command
    - Fix any schema validation errors
@@ -921,8 +921,8 @@ When users interact with Claude Code in this repository:
 The **L3VPN package** in this repository is production-ready code that demonstrates all best practices:
 
 ```bash
-# Explore the example
-cd /home/kpanse/wsl-myprojects/any1can-code/L3VPN
+# Explore the example (relative to repository root)
+cd L3VPN
 
 # Study the YANG model
 cat src/yang/L3VPN.yang
