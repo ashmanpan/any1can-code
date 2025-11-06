@@ -4,6 +4,25 @@
 
 This is the **Any1Can Code Platform** - an AI-powered code generation system that helps users create production-ready code through conversational wizards, with special focus on **Cisco Network Automation** (NSO and Crosswork).
 
+## ⚠️ IMPORTANT: Read CLAUDE.md First
+
+**Before working on this repository, you MUST read:**
+- **`/home/kpanse/wsl-myprojects/any1can-code/CLAUDE.md`**
+
+This file contains:
+- Mandatory Cisco documentation references (ONLY official Cisco docs)
+- Complete wizard system prompts for NSO and Crosswork
+- Code generation rules and patterns
+- Quality checklist
+- Examples and best practices
+
+**Key Rules:**
+1. ✅ ONLY use Cisco official documentation (developer.cisco.com)
+2. ✅ Follow wizard system prompts exactly
+3. ✅ Use L3VPN example as pattern
+4. ✅ Generate complete, production-ready code
+5. ❌ NO third-party blogs or unofficial sources
+
 ## 📁 Important Files & Resources
 
 ### 📚 Documentation to Reference

@@ -1,0 +1,84 @@
+{
+    "id": "generic.db.sql.exec.postgres",
+    "version": "1.0.0",
+    "specVersion": "0.8",
+    "name": "postgres-db=sql-exec",
+    "description": "Workflow for performing sql exec against postgres db",
+    "functions": [
+      {
+        "name": "sql.query",
+        "operation": "generic.db.@latest.sql.Query"
+      },
+      {
+        "name": "sql.exec",
+        "operation": "generic.db.@latest.sql.Exec"
+      }
+    ],
+    "start": "Add",
+    "states":[
+      {
+        "name": "Add",
+        "type": "operation",
+        "transition": "Read",
+        "actions": [
+          {
+            "name": "insert",
+            "functionRef": {
+              "refName": "sql.exec",
+              "arguments":     {
+                "input": {
+                  "query": "INSERT INTO customers (customer_id, first_name, last_name, email, phone) VALUES ($1, $2, $3, $4, $5);",
+                  "args": [4, "Matches", "Malone", "b@s.com", "0001-228626"]
+                },
+                "config": {
+                  "resourceId": "drcwmPostgresResource"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Read",
+        "type": "operation",
+        "transition": "Remove",
+        "actions": [
+          {
+            "name": "select",
+            "functionRef": {
+              "refName": "sql.query",
+              "arguments":     {
+                "input": {
+                  "query": "SELECT customer_id,first_name,last_name FROM customers WHERE customer_id=4"
+                },
+                "config": {
+                  "resourceId": "drcwmPostgresResource"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Remove",
+        "type": "operation",
+        "end" : true,
+        "actions": [
+          {
+            "name": "delete",
+            "functionRef": {
+              "refName": "sql.exec",
+              "arguments":     {
+                "input": {
+                  "query": "DELETE FROM customers WHERE customer_id=4;"
+                },
+                "config": {
+                  "resourceId": "drcwmPostgresResource"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }

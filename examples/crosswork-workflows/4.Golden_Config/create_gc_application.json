@@ -1,0 +1,104 @@
+{
+  "id": "gc-create-app-1.0",
+  "name": "gc-create-app",
+  "start": "Begin",
+  "errors": [
+    {
+      "code": "DEFAULT",
+      "name": "error",
+      "description": "error"
+    },
+    {
+      "code": "HTTP_STATUS_400",
+      "name": "invalid-value-400",
+      "description": "invalid-value-400"
+    }
+  ],
+  "states": [
+    {
+      "name": "Begin",
+      "type": "foreach",
+      "actions": [
+        {
+          "name": "applyEditConfig",
+          "retryRef": "Default",
+          "functionRef": {
+            "refName": "NSO.RestconfPut",
+            "arguments": {
+              "input": {
+                "data": "{ \"application\": ${ .app | tostring } }",
+                "path": "restconf/data/golden-config:golden-config/application=${ .app.name }"
+              },
+              "config": {
+                "resourceId": "${ .resourceId }"
+              }
+            }
+          }
+        }
+      ],
+      "onErrors": [
+        {
+          "errorRef": "error",
+          "transition": "GenericOtherErrors"
+        },
+        {
+          "errorRef": "invalid-value-400",
+          "transition": "FatalCreation"
+        }
+      ],
+      "transition": {
+        "nextState": "JobCompleted"
+      },
+      "iterationParam": "app",
+      "inputCollection": "${ .golden_config.application }",
+      "outputCollection": "${ .golden_config_result }"
+    },
+    {
+      "end": true,
+      "name": "FatalCreation",
+      "type": "operation",
+      "actions": [],
+      "stateDataFilter": {
+        "output": "${ . |= .+ {\"status\": \"The required device(s) or template does not exist for one or more applications.\"} }"
+      }
+    },
+    {
+      "end": true,
+      "name": "GenericOtherErrors",
+      "type": "operation",
+      "actions": [],
+      "stateDataFilter": {
+        "output": "${ . |= .+ {\"status\": \"Error occurred in application(s) creation.\"} }"
+      }
+    },
+    {
+      "end": true,
+      "name": "JobCompleted",
+      "type": "operation",
+      "actions": [],
+      "stateDataFilter": {
+        "output": "${ . | del(.resourceId) | .golden_config_result[] |= ((select(.status == 201 or .status == 204 )) |= .+ {\"status\": \"true\"} | del(.data) )}"
+      }
+    }
+  ],
+  "retries": [
+    {
+      "name": "Default",
+      "delay": "PT5S",
+      "multiplier": 1.1,
+      "maxAttempts": 3
+    }
+  ],
+  "version": "1.0",
+  "functions": [
+    {
+      "name": "NSO.RestconfPut",
+      "metadata": {
+        "worker": "cisco.nso.v1.0.3"
+      },
+      "operation": "cisco.nso.v1.0.3.restconf.Put"
+    }
+  ],
+  "description": "Workflow to create one or more Golden Config applications",
+  "specVersion": "0.9"
+}

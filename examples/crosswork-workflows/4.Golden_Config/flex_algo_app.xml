@@ -1,0 +1,41 @@
+<golden-config xmlns="http://example.com/golden-config">
+  <application>
+    <name>flex-algo-app-node-1</name>
+    <device>node-1</device>
+    <jinja-template>
+      <template>flex-algo-template</template>
+      <version>1</version>
+    </jinja-template>
+
+  <!-- variable algorithm: default 128 -->
+      <variable>
+        <name>algorithm</name>
+        <value>128</value>
+      </variable>
+
+  <!-- variable priority: default 200 -->
+      <variable>
+        <name>priority</name>
+        <value>200</value>
+      </variable>
+
+  <!-- variable metric_type: default delay -->
+      <variable>
+        <name>metric_type</name>
+        <value>delay</value>
+      </variable>
+
+  <!-- variable loopback interface: default Loopback0 -->
+      <variable>
+        <name>loopback_interface</name>
+        <value>Loopback0</value>
+      </variable>
+
+  <!-- variable locator: default LATENCY -->
+      <variable>
+        <name>locator</name>
+        <value>LATENCY</value>
+      </variable>
+
+  </application>
+</golden-config>

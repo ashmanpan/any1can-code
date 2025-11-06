@@ -1,0 +1,50 @@
+<golden-config xmlns="http://example.com/golden-config">
+  <template>
+    <name>flex-algo-template</name>
+    <version>
+      <id>1</id>
+      <type>native</type>
+      <config>
+
+{# -- flex algo config --  #}
+{# -- Device name is expected in the format node-X -- #}
+
+{% set device_id = device.name.lstrip('node-') %}
+
+router isis 1
+ flex-algo {{ algorithm }}
+  priority {{ priority }}
+  metric-type {{ metric_type }}
+  advertise-definition
+  exit
+ exit
+
+router isis 1
+ interface {{ loopback_interface }}
+  address-family ipv4 unicast
+  prefix-sid algorithm {{ algorithm }} absolute 17{{ algorithm }}{{ device_id }}
+  exit
+ exit
+
+router isis 1
+ address-family ipv6 unicast
+  segment-routing srv6
+  locator {{ locator }}
+  exit
+
+ segment-routing
+  srv6
+   locators
+    locator {{ locator }}
+    micro-segment behavior unode psp-usd
+    prefix fcbb:{{ algorithm }}:{{ device_id }}::/48
+    algorithm {{ algorithm }}
+    exit
+   exit
+  exit
+ exit
+
+</config>
+    </version>
+  </template>
+</golden-config>

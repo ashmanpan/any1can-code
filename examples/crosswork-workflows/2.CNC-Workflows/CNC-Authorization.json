@@ -1,0 +1,98 @@
+{
+  "id": "CNC-Authorization",
+  "name": "CNC-Authorization",
+  "start": "getTicket",
+  "states": [
+    {
+      "name": "getTicket",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "getTicket",
+          "retryRef": "Default",
+          "functionRef": {
+            "refName": "REST.Post",
+            "arguments": {
+              "input": {
+                "path": "/crosswork/sso/v1/tickets?username=admin&password=cRo55work!",
+                "header": {
+                  "Accept": "application/json",
+                  "Content-Type": "application/x-www-form-urlencoded"
+                }
+              },
+              "config": {
+                "resourceId": "${ .resource }"
+              }
+            }
+          }
+        }
+      ],
+      "transition": {
+        "nextState": "getToken"
+      },
+      "stateDataFilter": {
+        "output": "${ { \"ticket\": .data, \"resource\": .resource } }"
+      }
+    },
+    {
+      "end": {
+        "terminate": true
+      },
+      "name": "getToken",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "getToken",
+          "retryRef": "Default",
+          "functionRef": {
+            "refName": "REST.Post",
+            "arguments": {
+              "input": {
+                "data": "service=https://198.18.134.219:30603/app-dashboard",
+                "path": "/crosswork/sso/v1/tickets/${ .ticket }",
+                "header": {
+                  "Content-Type": "application/x-www-form-urlencoded"
+                }
+              },
+              "config": {
+                "resourceId": "${ .resource }"
+              }
+            }
+          }
+        }
+      ],
+      "stateDataFilter": {
+        "output": "${ { \"token\": .data, \"resource\": .resource } }"
+      }
+    }
+  ],
+  "retries": [
+    {
+      "name": "Default",
+      "delay": "PT30S",
+      "multiplier": 1,
+      "maxAttempts": 1
+    }
+  ],
+  "version": "1.0.0",
+  "functions": [
+    {
+      "name": "REST.Get",
+      "operation": "generic.rest.v1.0.3.request.Get"
+    },
+    {
+      "name": "REST.Post",
+      "operation": "generic.rest.v1.0.3.request.Post"
+    },
+    {
+      "name": "REST.Put",
+      "operation": "generic.rest.v1.0.3.request.Put"
+    },
+    {
+      "name": "REST.Delete",
+      "operation": "generic.rest.v1.0.3.request.Delete"
+    }
+  ],
+  "description": "This is a CNC authorisation workflow",
+  "specVersion": "0.9"
+}

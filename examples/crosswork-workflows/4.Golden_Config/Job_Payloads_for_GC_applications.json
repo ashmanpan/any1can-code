@@ -1,0 +1,56 @@
+
+
+          # 1. Create App payload (node-3, algo 131, locator BESTEFFORT).  Run create_gc workflow.
+
+            {
+              "golden_config": {
+                "application": [
+                  {
+                    "device": "node-3",
+                    "jinja-template": {
+                      "template": "flex-algo-template",
+                      "version": 1
+                    },
+                    "name": "flex-algo-app-node-3",
+                    "variable": [
+                      {
+                        "name": "algorithm",
+                        "value": "131"
+                      },
+                      {
+                        "name": "priority",
+                        "value": "200"
+                      },
+                      {
+                        "name": "metric_type",
+                        "value": "delay"
+                      },
+                      {
+                        "name": "loopback_interface",
+                        "value": "Loopback0"
+                      },
+                      {
+                        "name": "locator",
+                        "value": "BESTEFFORT"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "resourceId": "nso-dcloud"
+            }
+
+
+# 2. Delete App payload (node-2, algo 131, locator BESTEFFORT).  Run delete_gc workflow.
+
+{
+  "golden_config": {
+    "application": [
+      "flex-algo-app-node-2"
+    ]
+  },
+  "resourceId": "nso-dcloud"
+}
+
+
+

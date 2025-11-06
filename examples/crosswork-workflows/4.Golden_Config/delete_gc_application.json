@@ -1,0 +1,103 @@
+{
+  "id": "gc-delete-app",
+  "name": "gc-delete-app",
+  "start": "Begin",
+  "errors": [
+    {
+      "code": "DEFAULT",
+      "name": "error",
+      "description": "error"
+    },
+    {
+      "code": "HTTP_STATUS_404",
+      "name": "invalid-value-404",
+      "description": "invalid-value-404"
+    }
+  ],
+  "states": [
+    {
+      "name": "Begin",
+      "type": "foreach",
+      "actions": [
+        {
+          "name": "deleteApplication",
+          "retryRef": "Default",
+          "functionRef": {
+            "refName": "NSO.RestconfDelete",
+            "arguments": {
+              "input": {
+                "path": "restconf/data/golden-config:golden-config/application=${ .singleapp }"
+              },
+              "config": {
+                "resourceId": "${ .resourceId }"
+              }
+            }
+          }
+        }
+      ],
+      "onErrors": [
+        {
+          "errorRef": "error",
+          "transition": "GenericOtherErrors"
+        },
+        {
+          "errorRef": "invalid-value-404",
+          "transition": "FatalDeletion"
+        }
+      ],
+      "transition": {
+        "nextState": "JobCompleted"
+      },
+      "iterationParam": "singleapp",
+      "inputCollection": "${ .golden_config.application }",
+      "outputCollection": "${ .golden_config_result }"
+    },
+    {
+      "end": true,
+      "name": "FatalDeletion",
+      "type": "operation",
+      "actions": [],
+      "stateDataFilter": {
+        "output": "${ . |= .+ {\"status\": \"One or more applications does not exist.\"} }"
+      }
+    },
+    {
+      "end": true,
+      "name": "GenericOtherErrors",
+      "type": "operation",
+      "actions": [],
+      "stateDataFilter": {
+        "output": "${ . |= .+ {\"status\": \"Error occurred in application(s) creation.\"} }"
+      }
+    },
+    {
+      "end": true,
+      "name": "JobCompleted",
+      "type": "operation",
+      "actions": [],
+      "stateDataFilter": {
+        "output": "${ . | del(.resourceId) | .golden_config_result[] |= ((select(.status == 201 or .status == 204 )) |= .+ {\"status\": \"true\"} | del(.data) ) }"
+      }
+    }
+  ],
+  "retries": [
+    {
+      "name": "Default",
+      "delay": "PT5S",
+      "multiplier": 1.1,
+      "maxAttempts": 3
+    }
+  ],
+  "version": "1.0",
+  "functions": [
+    {
+      "name": "NSO.RestconfDelete",
+      "metadata": {
+        "worker": "cisco.nso.v1.0.3"
+      },
+      "operation": "cisco.nso.v1.0.3.restconf.Delete"
+    }
+  ],
+  "description": "Workflow to delete one or more Golden Config applications",
+  "specVersion": "0.9"
+}

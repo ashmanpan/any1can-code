@@ -1,0 +1,43 @@
+/* 1. nso-post example single device payload */
+{
+  "resourceId" : "nso-dcloud",
+  "livestatus" : {
+    "input_data": [
+      {
+        "device": "xr0",
+        "payload": {
+           "input": {
+            "args": "show version"
+           }
+        }
+      }
+    ]
+  }
+}
+
+/* 2. nso-post example multi-device payload */
+
+{
+  "resourceId" : "nso-dcloud",
+  "livestatus" : {
+    "input_data": [
+      {
+        "device": "xr0",
+        "payload": {
+           "input": {
+            "args": "show  version"
+           }
+        }
+      },
+      {
+        "device": "xr1",
+        "payload": {
+          "input": {
+           "args": "show run"
+          }
+       }
+      }
+    ]
+  }
+}
+

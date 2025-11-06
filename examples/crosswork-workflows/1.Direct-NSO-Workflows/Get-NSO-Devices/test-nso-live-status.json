@@ -1,0 +1,104 @@
+{
+  "id": "test-nso-live-status",
+  "name": "test-nso-live-status",
+  "start": "Begin",
+  "errors": [
+    {
+      "code": "DEFAULT",
+      "name": "error",
+      "description": "error"
+    },
+    {
+      "code": "HTTP_STATUS_400",
+      "name": "invalid-value-400",
+      "description": "invalid-value-400"
+    }
+  ],
+  "states": [
+    {
+      "name": "Begin",
+      "type": "foreach",
+      "actions": [
+        {
+          "name": "doLiveStatus",
+          "retryRef": "Default",
+          "functionRef": {
+            "refName": "NSO.RestconfPost",
+            "arguments": {
+              "input": {
+                "data": "${ .dataset.payload | tostring }",
+                "path": "restconf/data/tailf-ncs:devices/device=${ .dataset.device }/live-status/tailf-ned-cisco-ios-xr-stats:exec/any"
+              },
+              "config": {
+                "resourceId": "${ .resourceId }"
+              }
+            }
+          }
+        }
+      ],
+      "onErrors": [
+        {
+          "errorRef": "error",
+          "transition": "GenericOtherErrors"
+        },
+        {
+          "errorRef": "invalid-value-400",
+          "transition": "FatalCreation"
+        }
+      ],
+      "transition": {
+        "nextState": "JobCompleted"
+      },
+      "iterationParam": "dataset",
+      "inputCollection": "${ .livestatus.input_data }",
+      "outputCollection": "${ .livestatus_result }"
+    },
+    {
+      "end": true,
+      "name": "FatalCreation",
+      "type": "operation",
+      "actions": [],
+      "stateDataFilter": {
+        "output": "${ . |= .+ {\"status\": \"The required device(s) or live status does not exist.\"} }"
+      }
+    },
+    {
+      "end": true,
+      "name": "GenericOtherErrors",
+      "type": "operation",
+      "actions": [],
+      "stateDataFilter": {
+        "output": "${ . |= .+ {\"status\": \"Error occurred in application(s) creation.\"} }"
+      }
+    },
+    {
+      "end": true,
+      "name": "JobCompleted",
+      "type": "operation",
+      "actions": [],
+      "stateDataFilter": {
+        "output": "${ . | del(.resourceId) | .livestatus_result[] |= ((select(.status == 201 or .status == 204 )) |= .+ {\"status\": \"true\"} | (.data ) )}"
+      }
+    }
+  ],
+  "retries": [
+    {
+      "name": "Default",
+      "delay": "PT5S",
+      "multiplier": 1.1,
+      "maxAttempts": 3
+    }
+  ],
+  "version": "1.0",
+  "functions": [
+    {
+      "name": "NSO.RestconfPost",
+      "metadata": {
+        "worker": "cisco.nso.v1.0.3"
+      },
+      "operation": "cisco.nso.v1.0.3.restconf.Post"
+    }
+  ],
+  "description": "Workflow to create one or more NSO Post Requests for Live Status",
+  "specVersion": "0.9"
+}

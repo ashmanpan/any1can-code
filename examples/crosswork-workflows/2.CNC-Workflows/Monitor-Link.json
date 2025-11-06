@@ -1,0 +1,117 @@
+{
+  "id": "Monitor-Link",
+  "name": "Monitor-Link",
+  "start": "setVariables",
+  "errors": [
+    {
+      "code": "DEFAULT",
+      "name": "error",
+      "description": "error"
+    }
+  ],
+  "states": [
+    {
+      "data": {
+        "nodeA": "node-3",
+        "nodeZ": "node-8",
+        "encode1": "%20%3A%20",
+        "encode2": "%2F",
+        "linkType": "ISIS_IPV6_L2",
+        "password": "cRo55work!",
+        "resource": "cncAdv",
+        "username": "admin",
+        "interfaceA": "GigabitEthernet0/0/0/8",
+        "interfaceZ": "GigabitEthernet0/0/0/3"
+      },
+      "name": "setVariables",
+      "type": "inject",
+      "transition": "cncLogin"
+    },
+    {
+      "name": "cncLogin",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "loginToCNC",
+          "subFlowRef": {
+            "invoke": "sync",
+            "version": "1.0.0",
+            "workflowId": "CNC-Authorization",
+            "onParentComplete": "continue"
+          },
+          "actionDataFilter": {
+            "toStateData": "${ .cncLogin }"
+          }
+        }
+      ],
+      "transition": "getMetrics"
+    },
+    {
+      "name": "getMetrics",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "getPM",
+          "retryRef": "Default",
+          "functionRef": {
+            "refName": "REST.Get",
+            "arguments": {
+              "input": {
+                "path": "${ ((\"crosswork/nbi/optima/v2/restconf/data/cisco-crosswork-performance-metrics:igp-links-performance-metrics/igp-link-pm=\" + .nodeA + .encode1 + (.interfaceA | gsub(\"/\"; \"%2F\")) + .encode1 + .nodeZ + .encode1 + (.interfaceZ | gsub(\"/\"; \"%2F\")) + .encode1 + .linkType) | tostring) }",
+                "header": {
+                  "Accept": "application/json",
+                  "Authorization": "Bearer ${ .cncLogin.token }"
+                }
+              },
+              "config": {
+                "resourceId": "${ .resource }"
+              }
+            }
+          }
+        }
+      ],
+      "onErrors": [
+        {
+          "errorRef": "error",
+          "transition": "finish"
+        }
+      ],
+      "transition": "finish"
+    },
+    {
+      "end": true,
+      "name": "finish",
+      "type": "operation",
+      "actions": [],
+      "stateDataFilter": {
+        "output": "${ .data }"
+      }
+    }
+  ],
+  "retries": [
+    {
+      "name": "Default",
+      "delay": "PT10S",
+      "multiplier": 1,
+      "maxAttempts": 1
+    }
+  ],
+  "version": "1.0.0",
+  "functions": [
+    {
+      "name": "REST.Post",
+      "operation": "generic.rest.v1.0.3.request.Post"
+    },
+    {
+      "name": "REST.Get",
+      "operation": "generic.rest.v1.0.3.request.Get"
+    },
+    {
+      "name": "REST.Patch",
+      "operation": "generic.rest.v1.0.3.request.Patch"
+    }
+  ],
+  "description": "Continuously Monitor Link and Trigger Route-Policy Workflow on XR Device",
+  "specVersion": "0.9",
+  "expressionLang": "jq"
+}

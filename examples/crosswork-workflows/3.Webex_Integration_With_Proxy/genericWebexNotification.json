@@ -1,0 +1,75 @@
+{
+  "id": "webexNotify",
+  "name": "genericWebexNotification",
+  "start": "prepareNotification",
+  "states": [
+    {
+      "end": {
+        "terminate": true
+      },
+      "name": "sendNotification",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "sendNotification",
+          "retryRef": "Default",
+          "functionRef": {
+            "refName": "REST.Post",
+            "arguments": {
+              "input": {
+                "data": "{\"text\": \"TEXT Portion - Won't show if markdown defined\",\"markdown\": \"  \\n\\n**Workflow Notification**: <br /><br />Crosswork Workflow Manager has completed processing the following action:  \\n\\nAction: [`${ .action }`]  \\nDevice: [`${ .node }`] \",\"roomId\": \"${ .WEBEX_ROOM_ID }\"}",
+                "path": "/v1/messages",
+                "header": {
+                  "Content-Type": "application/json",
+                  "Authorization": "Bearer ${ .WEBEX_ACCESS_TOKEN }"
+                }
+              },
+              "config": {
+                "resourceId": "webex"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "data": {
+        "WEBEX_SITE": "https://developer.webex.com/docs/getting-started",
+        "WEBEX_ROOM_ID": "71826410-01af-11ef-bf8f-39b2330cafc3",
+        "WEBEX_ACCESS_TOKEN": "N2JhZTlmMmQtYmQ0ZS00ZGIxLTk5ODMtNjllMzQ1MThmZjkzMGRmZWQwODgtYWQx_PF84_1eb65fdf-9643-417f-9974-ad72cae0e10f"
+      },
+      "name": "prepareNotification",
+      "type": "inject",
+      "transition": "sendNotification"
+    }
+  ],
+  "retries": [
+    {
+      "name": "Default",
+      "delay": "PT30S",
+      "multiplier": 1,
+      "maxAttempts": 1
+    }
+  ],
+  "version": "1.0.1",
+  "functions": [
+    {
+      "name": "REST.Get",
+      "operation": "generic.rest.v1.0.2.request.Get"
+    },
+    {
+      "name": "REST.Post",
+      "operation": "generic.rest.v1.0.2.request.Post"
+    },
+    {
+      "name": "REST.Put",
+      "operation": "generic.rest.v1.0.2.request.Put"
+    },
+    {
+      "name": "REST.Delete",
+      "operation": "generic.rest.v1.0.2.request.Delete"
+    }
+  ],
+  "description": "This is a generic Webex Notification call",
+  "specVersion": "0.9"
+}

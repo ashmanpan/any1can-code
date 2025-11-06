@@ -1,0 +1,47 @@
+{
+    "id": "generic.db.sql.query.postgres",
+    "version": "1.0.0",
+    "specVersion": "0.8",
+    "name": "postgres-db=sql-query",
+    "description": "Workflow for performing sql query against postgres db",
+    "functions": [
+      {
+        "name": "sql.query",
+        "operation": "generic.db.@latest.sql.Query"
+      }
+    ],
+    "retries": [
+      {
+        "name": "NoRetry",
+        "maxAttempts": 1,
+        "delay": "PT0S",
+        "multiplier": 1
+      }
+    ],
+    "start": "Only State",
+    "states":[
+      {
+        "name":"Only State",
+        "type":"operation",
+        "end": true,
+        "actions": [
+          {
+            "name": "SqlQuery",
+            "retryRef": "NoRetry",
+            "functionRef": {
+              "refName": "sql.query",
+              "arguments":     {
+                "input": {
+                  "query": "SELECT customer_id,first_name,last_name FROM customers WHERE customer_id=$1",
+                  "args": "${.args}"
+                },
+                "config": {
+                  "resourceId": "drcwmPostgresResource"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }

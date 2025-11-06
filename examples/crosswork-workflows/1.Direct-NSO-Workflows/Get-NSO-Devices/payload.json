@@ -1,0 +1,8 @@
+/* NSO Get Devices payload */
+
+/* get devices */
+{
+  "limit": 100,
+  "offset": 0,
+  "resourceId": "nso-dcloud"
+}
