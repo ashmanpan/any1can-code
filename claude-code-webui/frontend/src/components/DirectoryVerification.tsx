@@ -18,6 +18,8 @@ export function DirectoryVerification({ workingDirectory, onContinue }: Director
   const [currentPath, setCurrentPath] = useState<string>("");
   const [isCorrectDirectory, setIsCorrectDirectory] = useState<boolean | null>(null);
   const [missingItems, setMissingItems] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchDirectoryTree();
@@ -25,6 +27,9 @@ export function DirectoryVerification({ workingDirectory, onContinue }: Director
 
   const fetchDirectoryTree = async () => {
     try {
+      setLoading(true);
+      setError(null);
+
       const path = workingDirectory || "";
       const url = `/api/directory-tree${path ? `?path=${encodeURIComponent(path)}` : ''}`;
       console.log("Fetching directory tree from:", url);
@@ -32,9 +37,10 @@ export function DirectoryVerification({ workingDirectory, onContinue }: Director
       const response = await fetch(url);
 
       if (!response.ok) {
-        console.error("API error:", response.status, response.statusText);
-        const errorData = await response.json();
-        console.error("Error details:", errorData);
+        const errorText = await response.text();
+        console.error("API error:", response.status, response.statusText, errorText);
+        setError(`API Error: ${response.status} ${response.statusText}`);
+        setLoading(false);
         return;
       }
 
@@ -46,8 +52,12 @@ export function DirectoryVerification({ workingDirectory, onContinue }: Director
 
       // Verify required files/directories
       verifyDirectory(data.tree || []);
+
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching directory tree:", error);
+      setError(error instanceof Error ? error.message : "Unknown error");
+      setLoading(false);
     }
   };
 
@@ -116,13 +126,37 @@ export function DirectoryVerification({ workingDirectory, onContinue }: Director
 
         {/* Content */}
         <div className="p-6">
-          {/* Current Directory */}
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold text-white mb-2">Current Working Directory:</h2>
-            <div className="bg-gray-900 rounded-lg p-4 font-mono text-sm text-gray-300 break-all">
-              {currentPath || "Loading..."}
+          {/* Loading State */}
+          {loading && (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mb-4"></div>
+              <p className="text-white text-lg">Loading directory structure...</p>
+              <p className="text-gray-400 text-sm mt-2">This should only take a moment</p>
             </div>
-          </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="bg-red-900/30 border border-red-700 rounded-lg p-4 mb-6">
+              <h3 className="font-semibold text-red-300 mb-2">⚠️ Error Loading Directory</h3>
+              <p className="text-sm text-red-200">{error}</p>
+              <p className="text-sm text-red-200 mt-2">
+                Make sure the backend is running on port 8080.
+                <br />
+                Check the console (F12) for more details.
+              </p>
+            </div>
+          )}
+
+          {/* Current Directory */}
+          {!loading && (
+            <>
+              <div className="mb-6">
+                <h2 className="text-lg font-semibold text-white mb-2">Current Working Directory:</h2>
+                <div className="bg-gray-900 rounded-lg p-4 font-mono text-sm text-gray-300 break-all">
+                  {currentPath || "Not loaded"}
+                </div>
+              </div>
 
           {/* Verification Status */}
           <div className="mb-6">

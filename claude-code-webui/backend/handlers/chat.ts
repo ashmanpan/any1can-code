@@ -2,6 +2,7 @@ import { Context } from "hono";
 import { query, type PermissionMode } from "@anthropic-ai/claude-code";
 import type { ChatRequest, StreamResponse } from "../../shared/types.ts";
 import { logger } from "../utils/logger.ts";
+import { ensureClaudeMdInDirectory } from "../utils/claude-md-copier.ts";
 
 /**
  * Executes a Claude command and yields streaming responses
@@ -104,6 +105,19 @@ export async function handleChatRequest(
   const stream = new ReadableStream({
     async start(controller) {
       try {
+        // Copy CLAUDE.md to working directory if specified
+        if (chatRequest.workingDirectory) {
+          const copySuccess = await ensureClaudeMdInDirectory(
+            chatRequest.workingDirectory,
+          );
+          if (copySuccess) {
+            logger.chat.info(
+              "CLAUDE.md ensured in working directory: {workingDirectory}",
+              { workingDirectory: chatRequest.workingDirectory },
+            );
+          }
+        }
+
         for await (const chunk of executeClaudeCommand(
           chatRequest.message,
           chatRequest.requestId,
