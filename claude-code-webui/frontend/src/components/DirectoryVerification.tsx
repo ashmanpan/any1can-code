@@ -26,8 +26,20 @@ export function DirectoryVerification({ workingDirectory, onContinue }: Director
   const fetchDirectoryTree = async () => {
     try {
       const path = workingDirectory || "";
-      const response = await fetch(`/api/directory-tree?path=${encodeURIComponent(path)}`);
+      const url = `/api/directory-tree${path ? `?path=${encodeURIComponent(path)}` : ''}`;
+      console.log("Fetching directory tree from:", url);
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        console.error("API error:", response.status, response.statusText);
+        const errorData = await response.json();
+        console.error("Error details:", errorData);
+        return;
+      }
+
       const data = await response.json();
+      console.log("Directory tree data:", data);
 
       setTree(data.tree || []);
       setCurrentPath(data.path || "");
