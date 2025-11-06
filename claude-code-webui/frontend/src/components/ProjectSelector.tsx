@@ -5,12 +5,14 @@ import type { ProjectsResponse, ProjectInfo } from "../types";
 import { getProjectsUrl } from "../config/api";
 import { SettingsButton } from "./SettingsButton";
 import { SettingsModal } from "./SettingsModal";
+import { DirectoryVerification } from "./DirectoryVerification";
 
 export function ProjectSelector() {
   const [projects, setProjects] = useState<ProjectInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [showVerification, setShowVerification] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,6 +49,16 @@ export function ProjectSelector() {
   const handleSettingsClose = () => {
     setIsSettingsOpen(false);
   };
+
+  // Show directory verification first
+  if (showVerification) {
+    return (
+      <DirectoryVerification
+        workingDirectory={undefined}
+        onContinue={() => setShowVerification(false)}
+      />
+    );
+  }
 
   if (loading) {
     return (
