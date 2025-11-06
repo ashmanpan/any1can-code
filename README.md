@@ -62,8 +62,10 @@ Claude: "Perfect! Here's your complete NSO package with YANG models,
 
 ```bash
 # Clone the repository
-git clone <repository-url>
-cd any1can-code-platform
+git clone https://github.com/ashmanpan/any1can-code.git
+
+# IMPORTANT: Change into the cloned directory
+cd any1can-code
 
 # Navigate to claude-code-webui
 cd claude-code-webui
@@ -77,9 +79,14 @@ cd ../frontend
 npm install
 ```
 
+**⚠️ IMPORTANT**: You MUST run Claude Code from inside the `any1can-code` directory (not the parent directory) for CLAUDE.md and examples to be automatically loaded.
+
 ### Running the Application
 
 ```bash
+# Make sure you're in the any1can-code directory
+# (Run: pwd or cd to verify you're in /path/to/any1can-code)
+
 # Terminal 1 - Backend
 cd claude-code-webui/backend
 npm run dev
@@ -89,6 +96,16 @@ cd claude-code-webui/frontend
 npm run dev
 
 # Open browser to: http://localhost:3000
+```
+
+**Directory Structure Check**:
+```
+C:/Users/administrator/hackthon/
+└── any1can-code/              ← You must be HERE
+    ├── CLAUDE.md              ← Claude Code reads this
+    ├── examples/              ← 34+ workflow examples
+    ├── tools/                 ← CWM validator
+    └── claude-code-webui/     ← Start app from here
 ```
 
 ---
