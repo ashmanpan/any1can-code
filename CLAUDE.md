@@ -15,7 +15,7 @@ When generating code or answering questions, you **MUST** follow this priority o
 **Location:** `/home/kpanse/wsl-myprojects/any1can-code/examples/`
 
 **BEFORE generating ANY code, you MUST:**
-1. ✅ Check if similar examples exist in `examples/nso-packages/` or `examples/crosswork-workflows/`
+1. ✅ Check if similar examples exist in `/home/kpanse/wsl-myprojects/any1can-code/examples/nso-packages/` or `/home/kpanse/wsl-myprojects/any1can-code/examples/crosswork-workflows/`
 2. ✅ Read the example files completely
 3. ✅ Use the example as your PRIMARY template
 4. ✅ Follow the exact patterns, structure, and style from the examples
@@ -23,7 +23,7 @@ When generating code or answering questions, you **MUST** follow this priority o
 
 **Directory Structure:**
 ```
-examples/
+/home/kpanse/wsl-myprojects/any1can-code/examples/
 ├── nso-packages/          # NSO service package examples (CHECK FIRST for NSO)
 ├── crosswork-workflows/   # Crosswork workflow examples (CHECK FIRST for Crosswork)
 └── python-scripts/        # Python automation examples (CHECK FIRST for Python)
@@ -39,7 +39,7 @@ examples/
 ```
 User asks: "Create an NSO L3VPN service package"
     ↓
-Step 1: Check examples/nso-packages/ directory
+Step 1: Check /home/kpanse/wsl-myprojects/any1can-code/examples/nso-packages/ directory
 Step 2: Find similar example (L3VPN, if exists)
 Step 3: Read ALL files in that example
 Step 4: Use it as PRIMARY template
@@ -94,11 +94,11 @@ When generating code or answering questions, you **MUST** reference ONLY the fol
 
 ### **PRIORITY 3: Local Legacy Examples (Backup Reference)**
 
-**Note:** The primary examples are in the `examples/` directory. These legacy examples are kept for backward compatibility.
+**Note:** The primary examples are in the `/home/kpanse/wsl-myprojects/any1can-code/examples/` directory. These legacy examples are kept for backward compatibility.
 
 You have access to legacy examples in this repository:
 - **Location**: `/home/kpanse/wsl-myprojects/any1can-code/L3VPN/`
-- **Use for**: Backup reference if examples/ directory doesn't have what you need
+- **Use for**: Backup reference if `/home/kpanse/wsl-myprojects/any1can-code/examples/` directory doesn't have what you need
 - **Files**:
   - `src/yang/L3VPN.yang` - YANG model example
   - `templates/L3VPN-template.xml` - XML template with conditionals
@@ -147,7 +147,7 @@ You are a Cisco NSO expert and automation architect with deep knowledge of YANG 
 - **THIRD**: Reference YANG RFCs (6020, 7950) for modeling best practices
 - **BACKUP**: Use the L3VPN example at `/home/kpanse/wsl-myprojects/any1can-code/L3VPN/` if needed
 
-**IMPORTANT**: Before starting the interview, check the examples/ directory. If a similar package exists, tell the user you found an example and will use it as a template.
+**IMPORTANT**: Before starting the interview, check the `/home/kpanse/wsl-myprojects/any1can-code/examples/` directory. If a similar package exists, tell the user you found an example and will use it as a template.
 
 **Interview Process** (32 questions across 6 phases):
 
@@ -293,7 +293,7 @@ You are a Cisco Crosswork Network Automation expert specializing in workflow des
 - **SECOND**: Use Cisco Crosswork official documentation: https://developer.cisco.com/site/crosswork/
 - **THIRD**: Reference Cisco DevNet for workflow examples: https://developer.cisco.com/codeexchange/
 
-**IMPORTANT**: Before starting the interview, check the examples/ directory INCLUDING the cloned repositories (cwm-workflows/ and xr-upgrade-workflows/). If a similar workflow exists, tell the user you found an example and will use it as a template. These are production-validated examples with proven patterns.
+**IMPORTANT**: Before starting the interview, check the `/home/kpanse/wsl-myprojects/any1can-code/examples/` directory INCLUDING the cloned repositories (`/home/kpanse/wsl-myprojects/any1can-code/examples/crosswork-workflows/cwm-workflows/` and `/home/kpanse/wsl-myprojects/any1can-code/examples/crosswork-workflows/xr-upgrade-workflows/`). If a similar workflow exists, tell the user you found an example and will use it as a template. These are production-validated examples with proven patterns.
 
 **Interview Process** (44 questions across 8 phases):
 
