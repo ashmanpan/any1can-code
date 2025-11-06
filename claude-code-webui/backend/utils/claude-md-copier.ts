@@ -1,36 +1,93 @@
-import { copyFile, access, constants } from "node:fs/promises";
+import { copyFile, access, constants, cp, mkdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { cwd } from "node:process";
 import { logger } from "./logger.js";
 import { logClaudeMdCopy, logError } from "./file-logger.js";
 
 /**
- * Get the source CLAUDE.md location dynamically
+ * Get the repository root path dynamically
  * Assumes backend is running from any1can-code/claude-code-webui/backend
- * and CLAUDE.md is at any1can-code/CLAUDE.md (2 levels up)
+ * and repository root is at any1can-code/ (2 levels up)
  */
-function getSourceClaudeMdPath(): string {
-  // Try to find CLAUDE.md in repository root
-  // Backend runs from: any1can-code/claude-code-webui/backend
-  // Repository root: any1can-code/
+function getRepositoryRoot(): string {
   const backendDir = cwd();
-
-  // Try going up 2 levels to repository root
   const repoRoot = resolve(backendDir, "../..");
-  const claudeMdPath = join(repoRoot, "CLAUDE.md");
 
   logger.app.debug(`Backend running from: ${backendDir}`);
-  logger.app.debug(`Looking for CLAUDE.md at: ${claudeMdPath}`);
+  logger.app.debug(`Repository root at: ${repoRoot}`);
 
-  // Log to file
   logClaudeMdCopy(`Backend running from: ${backendDir}`, "DEBUG");
+  logClaudeMdCopy(`Repository root at: ${repoRoot}`, "DEBUG");
+
+  return repoRoot;
+}
+
+/**
+ * Get the source CLAUDE.md location dynamically
+ */
+function getSourceClaudeMdPath(): string {
+  const repoRoot = getRepositoryRoot();
+  const claudeMdPath = join(repoRoot, "CLAUDE.md");
+
+  logger.app.debug(`Looking for CLAUDE.md at: ${claudeMdPath}`);
   logClaudeMdCopy(`Looking for CLAUDE.md at: ${claudeMdPath}`, "DEBUG");
 
   return claudeMdPath;
 }
 
 /**
- * Copies CLAUDE.md to the target working directory if it doesn't already exist
+ * Copy examples directory to target working directory
+ */
+async function copyExamplesDirectory(targetDirectory: string): Promise<boolean> {
+  try {
+    const repoRoot = getRepositoryRoot();
+    const sourceExamplesDir = join(repoRoot, "examples");
+    const targetExamplesDir = join(targetDirectory, "examples");
+
+    logger.app.info(`Copying examples directory from ${sourceExamplesDir} to ${targetExamplesDir}`);
+    await logClaudeMdCopy(`Copying examples directory from ${sourceExamplesDir} to ${targetExamplesDir}`, "INFO");
+
+    // Check if source examples directory exists
+    try {
+      await access(sourceExamplesDir, constants.R_OK);
+    } catch (error) {
+      const msg = `Source examples directory not found at ${sourceExamplesDir}`;
+      logger.app.error(msg);
+      await logError(msg, error);
+      return false;
+    }
+
+    // Check if target examples directory already exists
+    try {
+      await access(targetExamplesDir, constants.F_OK);
+      const msg = `Examples directory already exists at ${targetExamplesDir}, skipping copy`;
+      logger.app.info(msg);
+      await logClaudeMdCopy(msg, "INFO");
+      return true;
+    } catch {
+      // Directory doesn't exist, proceed with copy
+      const msg = `Examples directory does not exist at ${targetExamplesDir}, will copy`;
+      logger.app.debug(msg);
+      await logClaudeMdCopy(msg, "DEBUG");
+    }
+
+    // Copy entire examples directory recursively
+    await cp(sourceExamplesDir, targetExamplesDir, { recursive: true });
+
+    const successMsg = `✅ Successfully copied examples directory to ${targetExamplesDir}`;
+    logger.app.info(successMsg);
+    await logClaudeMdCopy(successMsg, "INFO");
+    return true;
+  } catch (error) {
+    const errorMsg = `Failed to copy examples directory to ${targetDirectory}`;
+    logger.app.error(`${errorMsg}: {error}`, { error });
+    await logError(errorMsg, error);
+    return false;
+  }
+}
+
+/**
+ * Copies CLAUDE.md and examples directory to the target working directory
  * @param targetDirectory - The working directory where CLAUDE.md should be copied
  * @returns true if copy was successful or file already exists, false otherwise
  */
@@ -90,6 +147,14 @@ export async function ensureClaudeMdInDirectory(
     const successMsg = `✅ Successfully copied CLAUDE.md to ${targetPath}`;
     logger.app.info(successMsg);
     await logClaudeMdCopy(successMsg, "INFO");
+
+    // Also copy examples directory to target directory
+    const examplesCopySuccess = await copyExamplesDirectory(targetDirectory);
+    if (!examplesCopySuccess) {
+      logger.app.warn("Failed to copy examples directory, but CLAUDE.md was copied successfully");
+      await logClaudeMdCopy("Failed to copy examples directory, but CLAUDE.md was copied successfully", "INFO");
+    }
+
     return true;
   } catch (error) {
     const errorMsg = `Failed to copy CLAUDE.md to ${targetDirectory}`;

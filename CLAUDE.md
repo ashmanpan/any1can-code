@@ -6,29 +6,54 @@ This is the **Any1Can Code Platform** - an AI-powered code generation system spe
 
 ---
 
-## 🔧 CRITICAL: Determine Repository Root Path
+## 🔧 CRITICAL: Access to Examples Directory
 
-**BEFORE doing anything else, you MUST determine where the any1can-code repository is located:**
+**IMPORTANT: Examples directory should be available in your working directory!**
 
-1. **Find CLAUDE.md location**: This file (CLAUDE.md) was copied to your working directory
-2. **Locate the repository**: The original repository is at `any1can-code` directory
-3. **Common repository locations**:
-   - Windows: `C:\Users\Administrator\any1can-code\`
-   - Linux: `/home/user/any1can-code/`
-   - Mac: `/Users/user/any1can-code/`
-   - WSL: `/home/kpanse/wsl-myprojects/any1can-code/`
+The backend automatically copies the `examples/` directory to your working directory along with CLAUDE.md. This means you should have direct access to all examples.
 
-4. **Auto-detect the repository root**:
+### **Step 1: Check for Local Examples First**
+
+1. **Check if examples exist in current directory**:
    ```bash
-   # Search for the any1can-code directory
-   # Look for directories containing: examples/, tools/, L3VPN/, CLAUDE.md
-   # Start from common locations and search upwards
+   # Check if examples/ directory exists in your working directory
+   ls examples/
    ```
 
-5. **Set REPO_ROOT variable**: Once found, set this as your base path
-   - Example: `REPO_ROOT = C:\Users\Administrator\any1can-code\`
+2. **If examples/ exists locally**:
+   - ✅ Use `./examples/` for all example references
+   - ✅ You have full access to all 34+ workflow examples
+   - ✅ No need to search for repository root
 
-**ALL paths below are relative to REPO_ROOT!**
+### **Step 2: If Examples Not Found - Ask for Directory Access**
+
+**If `examples/` directory does NOT exist in your working directory:**
+
+1. **ASK THE USER for directory access**:
+   ```
+   "I need access to the examples directory to provide you with the best code templates.
+
+   The examples directory should be located at:
+   - Windows: C:\Users\Administrator\any1can-code\examples\
+   - Linux: /home/user/any1can-code/examples/
+
+   Can you grant me access to this directory, or let me know where the any1can-code
+   repository is located on your system?"
+   ```
+
+2. **Wait for user to provide the path**
+
+3. **Once user provides path, use it as REPO_ROOT**:
+   - Example: `REPO_ROOT = C:\Users\Administrator\any1can-code\`
+   - Then use: `{REPO_ROOT}/examples/`, `{REPO_ROOT}/tools/`, etc.
+
+### **Path Resolution Priority**
+
+1. **FIRST**: Try `./examples/` (local copy in working directory) ✅ **PREFERRED**
+2. **SECOND**: If not found, ask user for repository location
+3. **THIRD**: Use user-provided REPO_ROOT path
+
+**ALL paths below can use either `./examples/` (if local copy exists) or `{REPO_ROOT}/examples/` (if user provided path)!**
 
 ---
 
@@ -38,32 +63,27 @@ When generating code or answering questions, you **MUST** follow this priority o
 
 ### **PRIORITY 1: Examples Directory (ALWAYS CHECK FIRST!)**
 
-**Location:** `{REPO_ROOT}/examples/`
-
-**How to find it:**
-1. Determine REPO_ROOT (see section above)
-2. Append `examples/` to get full path
-3. Example: `C:\Users\Administrator\any1can-code\examples\`
+**Location:** `./examples/` (in your working directory - copied automatically)
 
 **BEFORE generating ANY code, you MUST:**
-1. ✅ Check if similar examples exist in `{REPO_ROOT}/examples/nso-packages/` or `{REPO_ROOT}/examples/crosswork-workflows/`
-2. ✅ Read the example files completely
-3. ✅ Use the example as your PRIMARY template
-4. ✅ Follow the exact patterns, structure, and style from the examples
-5. ✅ Only adapt what's specific to the user's requirements
+1. ✅ Check if similar examples exist in `./examples/nso-packages/` or `./examples/crosswork-workflows/`
+2. ✅ If `./examples/` not found, ask user for access (see section above)
+3. ✅ Read the example files completely
+4. ✅ Use the example as your PRIMARY template
+5. ✅ Follow the exact patterns, structure, and style from the examples
+6. ✅ Only adapt what's specific to the user's requirements
 
 **Directory Structure:**
 ```
-{REPO_ROOT}/examples/
+./examples/                # LOCAL COPY in your working directory
 ├── nso-packages/          # NSO service package examples (CHECK FIRST for NSO)
 ├── crosswork-workflows/   # Crosswork workflow examples (CHECK FIRST for Crosswork)
 └── python-scripts/        # Python automation examples (CHECK FIRST for Python)
 ```
 
 **Example Path Resolution:**
-- If REPO_ROOT = `C:\Users\Administrator\any1can-code\`
-- Then examples path = `C:\Users\Administrator\any1can-code\examples\`
-- Then NSO packages = `C:\Users\Administrator\any1can-code\examples\nso-packages\`
+- ✅ **PREFERRED**: `./examples/nso-packages/` (local copy)
+- ⚠️ **FALLBACK**: If local copy not found, ask user for repository path
 
 **Why Examples First?**
 - These are AUTHENTICATED, PRODUCTION-READY examples
@@ -75,8 +95,8 @@ When generating code or answering questions, you **MUST** follow this priority o
 ```
 User asks: "Create an NSO L3VPN service package"
     ↓
-Step 1: Determine REPO_ROOT (e.g., C:\Users\Administrator\any1can-code\)
-Step 2: Check {REPO_ROOT}/examples/nso-packages/ directory
+Step 1: Check ./examples/nso-packages/ directory (local copy)
+Step 2: If not found, ask user for repository location and access
 Step 3: Find similar example (L3VPN, if exists)
 Step 4: Read ALL files in that example
 Step 5: Use it as PRIMARY template
