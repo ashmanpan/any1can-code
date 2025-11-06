@@ -17,7 +17,7 @@ import { handleHistoriesRequest } from "./handlers/histories.ts";
 import { handleConversationRequest } from "./handlers/conversations.ts";
 import { handleChatRequest } from "./handlers/chat.ts";
 import { handleAbortRequest } from "./handlers/abort.ts";
-import { getDirectoryTree } from "./handlers/directory.ts";
+// import { getDirectoryTree } from "./handlers/directory.ts";
 import { logger } from "./utils/logger.ts";
 import { readBinaryFile } from "./utils/fs.ts";
 
@@ -59,7 +59,8 @@ export function createApp(
   // API routes
   app.get("/api/projects", (c) => handleProjectsRequest(c));
 
-  app.get("/api/directory-tree", (c) => getDirectoryTree(c));
+  // Directory verification disabled - CLAUDE.md copy happens automatically in backend
+  // app.get("/api/directory-tree", (c) => getDirectoryTree(c));
 
   app.get("/api/projects/:encodedProjectName/histories", (c) =>
     handleHistoriesRequest(c),
